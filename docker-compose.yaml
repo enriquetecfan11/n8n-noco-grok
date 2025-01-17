@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   n8n:
     container_name: n8n
@@ -41,6 +39,7 @@ services:
 
 volumes:
   n8n_data:
+  nocodb_data:
 
 networks:
   n8n-network:
