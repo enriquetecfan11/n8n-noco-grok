@@ -1,0 +1,11 @@
+version: 2
+log_level: debug
+tunnels:
+    n8n:
+        proto: http
+        addr: n8n:5678
+        domain: climbing-optionally-flounder.ngrok-free.app
+    nocodb:
+        proto: http
+        addr: nocodb:8080
+        domain: climbing-optionally-flounder.ngrok-free.app
