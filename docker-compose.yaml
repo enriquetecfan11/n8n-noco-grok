@@ -89,7 +89,8 @@ services:
       - nocodb_data:/usr/src/app/data
     labels:
       - traefik.enable=true
-      - traefik.http.routers.nocodb.rule=PathPrefix(`/nocodb`)
+      - traefik.http.middlewares.nocodb-strip-prefix.stripprefix.prefixes=/nocodb
+      - traefik.http.routers.nocodb.entrypoints=web
       - traefik.http.routers.nocodb.middlewares=nocodb-strip-prefix
       - traefik.http.middlewares.nocodb-strip-prefix.stripprefix.prefixes=/nocodb
       - traefik.http.services.nocodb.loadbalancer.server.port=8080
