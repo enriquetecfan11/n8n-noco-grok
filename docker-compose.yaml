@@ -38,7 +38,7 @@ services:
       - "--log=stdout"
       - "--log-level=debug"
       - "--host-header=localhost"
-      - "--url=https://${NGROK_DOMAIN_NAME}:8081"
+      - "--url=http://nginx-proxy-manager:8081"
     networks:
       - proxy
     depends_on:
