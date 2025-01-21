@@ -82,18 +82,17 @@ services:
     container_name: nocodb
     environment:
       - "NC_DB=sqlite3:/usr/app/data/nocodb.db"
-      - NC_PUBLIC_URL=https://${NGROK_DOMAIN_NAME}/nocodb
+      - NC_PUBLIC_URL=https://${NGROK_DOMAIN_NAME} # Configuración directa sin subruta
       - NC_DISABLE_TELE=true
     volumes:
       - nocodb_data:/usr/app/data
     labels:
       - traefik.enable=true
-      - traefik.http.routers.nocodb.rule=PathPrefix(`/nocodb`)
-      - traefik.http.routers.nocodb.middlewares=nocodb-strip-prefix
-      - traefik.http.middlewares.nocodb-strip-prefix.stripprefix.prefixes=/nocodb
+      - traefik.http.routers.nocodb.rule=Host(`${NGROK_DOMAIN_NAME}`) # Elimina PathPrefix para servir desde el dominio raíz
       - traefik.http.services.nocodb.loadbalancer.server.port=8080
     networks:
       - proxy
+
 
 volumes:
   n8n_data:
