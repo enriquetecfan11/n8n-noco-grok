@@ -79,23 +79,26 @@ services:
       - proxy
   
   nocodb:
-    image: nocodb/nocodb
-    container_name: nocodb
-    environment:
-      - NOCO_DB_PATH=/usr/src/app/data                  # Ruta donde se almacenan los datos
-      - NOCO_DB_ENDPOINT=/nocodb                       # Ruta base para NocoDB
-      - NOCO_DB_PORT=8080                              # Puerto interno de NocoDB
-      - NOCO_DB_SSL=true                               # Habilitar SSL si se usa Traefik con HTTPS
-    volumes:
-      - nocodb_data:/usr/src/app/data                  # Volumen persistente
-    labels:
-      - traefik.enable=true                            # Habilitar Traefik para este contenedor
-      - traefik.http.routers.nocodb.rule=PathPrefix(`/nocodb`)  # Regla para manejar la ruta
-      - traefik.http.routers.nocodb.middlewares=nocodb-strip-prefix
-      - traefik.http.middlewares.nocodb-strip-prefix.stripprefix.prefixes=/nocodb
-      - traefik.http.services.nocodb.loadbalancer.server.port=8080  # Puerto interno que escucha NocoDB
-    networks:
-      - proxy                                          # Red compartida con Traefik
+  image: nocodb/nocodb
+  container_name: nocodb
+  environment:
+    - NC_PUBLIC_URL=https://<tu_dominio>/nocodb
+    - NC_DASHBOARD_URL=/nocodb/dashboard
+    - NC_BACKEND_URL=https://<tu_dominio>/nocodb
+    - NOCO_DB_PATH=/usr/src/app/data
+    - NOCO_DB_PORT=8080
+  volumes:
+    - nocodb_data:/usr/src/app/data
+  labels:
+    - traefik.enable=true
+    - traefik.http.routers.nocodb.rule=PathPrefix(`/nocodb`)
+    - traefik.http.routers.nocodb.middlewares=nocodb-strip-prefix
+    - traefik.http.middlewares.nocodb-strip-prefix.stripprefix.prefixes=/nocodb
+    - traefik.http.services.nocodb.loadbalancer.server.port=8080
+  networks:
+    - proxy
+
+
 
 volumes:
   n8n_data:
