@@ -34,8 +34,8 @@ services:
     image: traefik/whoami
     container_name: whoami
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=PathPrefix(/whoami)"
+      - traefik.enable=true
+      - traefik.http.routers.whoami.rule=PathPrefix(`/whoami`)
     networks:
       - proxy
 
@@ -64,20 +64,32 @@ services:
     image: docker.n8n.io/n8nio/n8n
     container_name: n8n
     environment:
-      - N8N_EDITOR_BASE_URL="https://${NGROK_DOMAIN_NAME}/n8n"
+      - N8N_EDITOR_BASE_URL=https://${NGROK_DOMAIN_NAME}/n8n
       - N8N_ENDPOINT_REST=rest 
       - N8N_PATH=/n8n
+<<<<<<< HEAD
+      - WEBHOOK_URL=https://${NGROK_DOMAIN_NAME}/n8n/
+=======
       - WEBHOOK_URL="https://${NGROK_DOMAIN_NAME}/n8n/"
       - GENERIC_TIMEZONE=Asia/Seoul
       - TZ=Asia/Seoul
+>>>>>>> 2d3b92716bdaebbc317f8e7676e8a14793f3c180
     volumes:
       - n8n_data:/home/node/.n8n
     labels:
+<<<<<<< HEAD
+      - traefik.enable=true
+      - traefik.http.routers.n8n.rule=PathPrefix(`/n8n`)
+      - traefik.http.routers.n8n.middlewares=n8n-strip-prefix
+      - traefik.http.middlewares.n8n-strip-prefix.stripprefix.prefixes=/n8n
+      - traefik.http.services.n8n.loadbalancer.server.port=5678
+=======
       - "traefik.enable=true"
       - "traefik.http.routers.n8n.rule=PathPrefix(/n8n)"
       - "traefik.http.routers.n8n.middlewares=n8n-strip-prefix"
       - "traefik.http.middlewares.n8n-strip-prefix.stripprefix.prefixes=/n8n"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+>>>>>>> 2d3b92716bdaebbc317f8e7676e8a14793f3c180
     networks:
       - proxy
   
@@ -92,11 +104,19 @@ services:
     volumes:
       - nocodb_data:/usr/src/app/data
     labels:
+<<<<<<< HEAD
+      - traefik.enable=true
+      - traefik.http.routers.nocodb.rule=PathPrefix(`/nocodb`)
+      - traefik.http.routers.nocodb.middlewares=nocodb-strip-prefix
+      - traefik.http.middlewares.nocodb-strip-prefix.stripprefix.prefixes=/nocodb
+      - traefik.http.services.nocodb.loadbalancer.server.port=8080
+=======
       - "traefik.enable=true"
       - "traefik.http.routers.nocodb.rule=PathPrefix(/nocodb)"
       - "traefik.http.routers.nocodb.middlewares=nocodb-strip-prefix"
       - "traefik.http.middlewares.nocodb-strip-prefix.stripprefix.prefixes=/nocodb"
       - "traefik.http.services.nocodb.loadbalancer.server.port=8080"
+>>>>>>> 2d3b92716bdaebbc317f8e7676e8a14793f3c180
     networks:
       - proxy
 
