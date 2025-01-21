@@ -9,7 +9,7 @@ services:
     restart: always
     command:
       - "--log.level=DEBUG"
-      - "--api.dashboard=true" 
+      - "--api.dashboard=false" 
       - "--api.insecure=true"     
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -82,21 +82,21 @@ services:
     image: nocodb/nocodb
     container_name: nocodb
     environment:
-      - NOCO_DB_PATH=/usr/src/app/data
-      - NOCO_DB_PORT=8080
-      - NOCO_DB_ENDPOINT=/nocodb
-      - NOCO_DB_SSL=true
+      - NOCO_DB_PATH=/usr/src/app/data                  # Ruta donde se almacenan los datos
+      - NOCO_DB_ENDPOINT=/nocodb                       # Ruta base para NocoDB
+      - NOCO_DB_PORT=8080                              # Puerto interno de NocoDB
+      - NOCO_DB_SSL=true                               # Habilitar SSL si se usa Traefik con HTTPS
     volumes:
-      - nocodb_data:/usr/src/app/data
+      - nocodb_data:/usr/src/app/data                  # Volumen persistente
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.nocodb.rule=PathPrefix(`/nocodb`)
+      - traefik.enable=true                            # Habilitar Traefik para este contenedor
+      - traefik.http.routers.nocodb.rule=PathPrefix(`/nocodb`)  # Regla para manejar la ruta
       - traefik.http.routers.nocodb.middlewares=nocodb-strip-prefix
       - traefik.http.middlewares.nocodb-strip-prefix.stripprefix.prefixes=/nocodb
-      - traefik.http.services.nocodb.loadbalancer.server.port=8080
+      - traefik.http.services.nocodb.loadbalancer.server.port=8080  # Puerto interno que escucha NocoDB
     networks:
-      - proxy
-      
+      - proxy                                          # Red compartida con Traefik
+
 volumes:
   n8n_data:
     external: true
