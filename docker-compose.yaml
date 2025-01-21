@@ -9,7 +9,7 @@ services:
     restart: always
     ports:
       - "80:80"
-      - "81:81" # Admin interface
+      - "8081:81" # Admin interface updated to use 8081
       - "443:443"
     volumes:
       - ./data:/data
@@ -38,8 +38,7 @@ services:
       - "--log=stdout"
       - "--log-level=debug"
       - "--host-header=localhost"
-      - "--url=${NGROK_DOMAIN_NAME}"
-      - "nginx-proxy-manager:80"
+      - "--url=https://${NGROK_DOMAIN_NAME}:8081"
     networks:
       - proxy
     depends_on:
