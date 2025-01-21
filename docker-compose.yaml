@@ -10,6 +10,7 @@ services:
     command:
       - "--log.level=DEBUG"
       - "--api.dashboard=true" 
+      - "--api.insecure=true"     
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -34,10 +35,11 @@ services:
     container_name: whoami
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=PathPrefix(`/whoami`)"
+      - "traefik.http.routers.whoami.rule=PathPrefix(/whoami)"
     networks:
       - proxy
 
+    
   ngrok:
     image: ngrok/ngrok:latest
     container_name: ngrok
@@ -51,6 +53,7 @@ services:
       - "--log=stdout"
       - "--log-level=debug"
       - "--host-header=localhost"
+      - "--url=${NGROK_DOMAIN_NAME}"
       - "traefik:80"
     networks:
       - proxy
@@ -65,19 +68,19 @@ services:
       - N8N_ENDPOINT_REST=rest 
       - N8N_PATH=/n8n
       - WEBHOOK_URL="https://${NGROK_DOMAIN_NAME}/n8n/"
-      - GENERIC_TIMEZONE=Europe/Madrid
-      - TZ=Europe/Madrid
+      - GENERIC_TIMEZONE=Asia/Seoul
+      - TZ=Asia/Seoul
     volumes:
       - n8n_data:/home/node/.n8n
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.n8n.rule=PathPrefix(`/n8n`)"
+      - "traefik.http.routers.n8n.rule=PathPrefix(/n8n)"
       - "traefik.http.routers.n8n.middlewares=n8n-strip-prefix"
       - "traefik.http.middlewares.n8n-strip-prefix.stripprefix.prefixes=/n8n"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
     networks:
       - proxy
-
+  
   nocodb:
     image: nocodb/nocodb
     container_name: nocodb
@@ -90,7 +93,7 @@ services:
       - nocodb_data:/usr/src/app/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nocodb.rule=PathPrefix(`/nocodb`)"
+      - "traefik.http.routers.nocodb.rule=PathPrefix(/nocodb)"
       - "traefik.http.routers.nocodb.middlewares=nocodb-strip-prefix"
       - "traefik.http.middlewares.nocodb-strip-prefix.stripprefix.prefixes=/nocodb"
       - "traefik.http.services.nocodb.loadbalancer.server.port=8080"
