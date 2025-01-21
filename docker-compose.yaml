@@ -35,7 +35,11 @@ services:
       - NGROK_REGION=eu
     command: 
       - "http"
-      - "localhost:81"
+      - "--log=stdout"
+      - "--log-level=debug"
+      - "--host-header=localhost"
+      - "--url=${NGROK_DOMAIN_NAME}"
+      - "nginx-proxy-manager:81"
     networks:
       - proxy
     depends_on:
