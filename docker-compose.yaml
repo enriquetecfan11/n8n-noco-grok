@@ -10,7 +10,6 @@ services:
     command:
       - "--log.level=DEBUG"
       - "--api.dashboard=true" 
-      - "--api.insecure=true"     
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -39,7 +38,6 @@ services:
     networks:
       - proxy
 
-    
   ngrok:
     image: ngrok/ngrok:latest
     container_name: ngrok
@@ -53,7 +51,6 @@ services:
       - "--log=stdout"
       - "--log-level=debug"
       - "--host-header=localhost"
-      - "--url=${NGROK_DOMAIN_NAME}"
       - "traefik:80"
     networks:
       - proxy
@@ -68,8 +65,8 @@ services:
       - N8N_ENDPOINT_REST=rest 
       - N8N_PATH=/n8n
       - WEBHOOK_URL="https://${NGROK_DOMAIN_NAME}/n8n/"
-      - GENERIC_TIMEZONE=Asia/Seoul
-      - TZ=Asia/Seoul
+      - GENERIC_TIMEZONE=Europe/Madrid
+      - TZ=Europe/Madrid
     volumes:
       - n8n_data:/home/node/.n8n
     labels:
@@ -80,7 +77,7 @@ services:
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
     networks:
       - proxy
-  
+
   nocodb:
     image: nocodb/nocodb
     container_name: nocodb
