@@ -38,7 +38,6 @@ services:
     networks:
       - proxy
 
-    
   ngrok:
     image: ngrok/ngrok:latest
     container_name: ngrok
@@ -77,14 +76,14 @@ services:
       - traefik.http.services.n8n.loadbalancer.server.port=5678
     networks:
       - proxy
-  
+
   nocodb:
     image: nocodb/nocodb
     container_name: nocodb
     environment:
-      - NC_PUBLIC_URL=https://<tu_dominio>/nocodb
+      - NC_PUBLIC_URL=https://${NGROK_DOMAIN_NAME}/nocodb
       - NC_DASHBOARD_URL=/nocodb/dashboard
-      - NC_BACKEND_URL=https://<tu_dominio>/nocodb
+      - NC_BACKEND_URL=https://${NGROK_DOMAIN_NAME}/nocodb
       - NOCO_DB_PATH=/usr/src/app/data
       - NOCO_DB_PORT=8080
     volumes:
@@ -97,8 +96,6 @@ services:
       - traefik.http.services.nocodb.loadbalancer.server.port=8080
     networks:
       - proxy
-
-
 
 volumes:
   n8n_data:
