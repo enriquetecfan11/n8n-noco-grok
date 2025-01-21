@@ -83,7 +83,6 @@ services:
     environment:
       - "NC_DB=sqlite3:/usr/app/data/nocodb.db"
       - NC_PUBLIC_URL=https://${NGROK_DOMAIN_NAME}/nocodb
-      - NC_BACKEND_URL=https://${NGROK_DOMAIN_NAME}/nocodb
       - NC_DISABLE_TELE=true
     volumes:
       - nocodb_data:/usr/app/data
