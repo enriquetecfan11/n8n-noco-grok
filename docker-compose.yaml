@@ -88,8 +88,6 @@ services:
       - traefik.http.services.nocodb.loadbalancer.server.port=8080
     networks:
       - proxy
-    depens_on:
-      - traefik
 
 
 volumes:
