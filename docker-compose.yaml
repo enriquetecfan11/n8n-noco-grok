@@ -83,9 +83,9 @@ services:
     container_name: nocodb
     environment:
       - NOCO_DB_PATH=/usr/src/app/data
-      - NOCO_DB_ENDPOINT=https://${NGROK_DOMAIN_NAME}/nocodb
       - NOCO_DB_PORT=8080
-      - NOCO_DB_HOST=http://localhost:8080
+      - NOCO_DB_ENDPOINT=/nocodb
+      - NOCO_DB_SSL=true
     volumes:
       - nocodb_data:/usr/src/app/data
     labels:
@@ -96,7 +96,7 @@ services:
       - traefik.http.services.nocodb.loadbalancer.server.port=8080
     networks:
       - proxy
-
+      
 volumes:
   n8n_data:
     external: true
