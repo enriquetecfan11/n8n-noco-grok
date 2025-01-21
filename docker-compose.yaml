@@ -78,13 +78,13 @@ services:
     container_name: nocodb
     environment:
       - NC_DB=sqlite3:/usr/app/data/nocodb.db
-      - NC_PUBLIC_URL=https://nocodb.${NGROK_DOMAIN_NAME} # Subdominio para NocoDB
+      - NC_PUBLIC_URL=https://${NGROK_DOMAIN_NAME} # Subdominio para NocoDB
       - NC_DISABLE_TELE=true
     volumes:
       - nocodb_data:/usr/app/data
     labels:
       - traefik.enable=true
-      - traefik.http.routers.nocodb.rule=Host(`nocodb.${NGROK_DOMAIN_NAME}`) # Configura el subdominio
+      - traefik.http.routers.nocodb.rule=Host(`${NGROK_DOMAIN_NAME}`) # Configura el subdominio
       - traefik.http.services.nocodb.loadbalancer.server.port=8080
     networks:
       - proxy
