@@ -3,34 +3,25 @@ networks:
         name: proxy
 
 services:
-  traefik:
-    image: traefik:v3.2
-    container_name: traefik
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
     restart: always
-    command:
-      - "--log.level=DEBUG" 
-      - "--api.insecure=true"     
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"  
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"               
-      - "--certificatesresolvers.myresolver.acme.email=${ADMIN_EMAIL}"            
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"  
+    ports:
+      - "80:80"
+      - "81:81" # Admin interface
+      - "443:443"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./letsencrypt:/letsencrypt  
-    labels:
-      - traefik.enable=true
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    environment:
+      - DISABLE_IPV6=true
     networks:
       - proxy
 
   whoami:
     image: traefik/whoami
     container_name: whoami
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.whoami.rule=PathPrefix(`/whoami`)
     networks:
       - proxy
 
@@ -48,11 +39,11 @@ services:
       - "--log-level=debug"
       - "--host-header=localhost"
       - "--url=${NGROK_DOMAIN_NAME}"
-      - "traefik:80"
+      - "nginx-proxy-manager:80"
     networks:
       - proxy
     depends_on:
-      - traefik
+      - nginx-proxy-manager
 
   n8n:
     image: docker.n8n.io/n8nio/n8n
@@ -64,12 +55,6 @@ services:
       - WEBHOOK_URL=https://${NGROK_DOMAIN_NAME}/n8n/
     volumes:
       - n8n_data:/home/node/.n8n
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.n8n.rule=PathPrefix(`/n8n`)
-      - traefik.http.routers.n8n.middlewares=n8n-strip-prefix
-      - traefik.http.middlewares.n8n-strip-prefix.stripprefix.prefixes=/n8n
-      - traefik.http.services.n8n.loadbalancer.server.port=5678
     networks:
       - proxy
 
@@ -82,13 +67,8 @@ services:
       - NC_DISABLE_TELE=true
     volumes:
       - nocodb_data:/usr/app/data
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.nocodb.rule=Host(`${NGROK_DOMAIN_NAME}`) # Configura el subdominio
-      - traefik.http.services.nocodb.loadbalancer.server.port=8080
     networks:
       - proxy
-
 
 volumes:
   n8n_data:
