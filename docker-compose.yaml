@@ -19,7 +19,7 @@ x-n8n: &service-n8n
     - N8N_PERSONALIZATION_ENABLED=false
     - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
     - N8N_USER_MANAGEMENT_JWT_SECRET=${N8N_USER_MANAGEMENT_JWT_SECRET}
-    - WEBHOOK_URL=${NGROK_SUBDOMAIN}
+    - WEBHOOK_URL=${WEBHOOK_URL}
   links:
     - postgres
 
@@ -55,6 +55,7 @@ services:
         condition: service_healthy
 
   ngrok:
+    container_name: ngrok
     image: ngrok/ngrok:latest
     restart: unless-stopped
     environment:
@@ -63,7 +64,6 @@ services:
       - N8N_PERSONALIZATION_ENABLED=false
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
       - N8N_USER_MANAGEMENT_JWT_SECRET=${N8N_USER_MANAGEMENT_JWT_SECRET}
-      - WEBHOOK_URL=${NGROK_SUBDOMAIN}
     command:
       - "start"
       - "--all"
@@ -74,6 +74,7 @@ services:
     networks: ['demo']
 
   nocodb:
+    container_name: nocodb
     image: nocodb/nocodb:latest
     restart: unless-stopped
     networks: ['demo']
@@ -81,9 +82,8 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - DB_CONNECTION_STRING=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      - PORT=8080
-      - JWT_SECRET=${N8N_USER_MANAGEMENT_JWT_SECRET}
+      NC_DB: "pg://postgres:5432?u=${POSTGRES_USER}&p=${POSTGRES_PASSWORD}&d=${POSTGRES_DB}"
+      NC_CORS: ${NGROK_SUBDOMAIN},http://localhost:8081,http://n8n:5678
     ports:
       - "8081:8080"
     volumes:
