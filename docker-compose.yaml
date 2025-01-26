@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 volumes:
   n8n_storage: {}
   postgres_storage: {}
@@ -54,38 +53,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-=======
-networks:
-    proxy:
-        name: proxy
-
-services:
-  nginx-proxy-manager:
-    image: jc21/nginx-proxy-manager:latest
-    container_name: nginx-proxy-manager
-    restart: always
-    ports:
-      - "80:80"
-      - "81:81" # Admin interface
-      - "443:443"
-    volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
-    environment:
-      - DISABLE_IPV6=true
-    networks:
-      - proxy
-
-  whoami:
-    image: traefik/whoami
-    container_name: whoami
-    networks:
-      - proxy
->>>>>>> 5f80ee441ce9b43d789ea3ac93a4cfd47af11c84
 
   ngrok:
     image: ngrok/ngrok:latest
-<<<<<<< HEAD
     restart: unless-stopped
     environment:
       - NGROK_AUTHTOKEN=${NGROK_TOKEN}
@@ -102,42 +72,9 @@ services:
     volumes:
       - ./ngrok.yml:/etc/ngrok.yml
     networks: ['demo']
-=======
-    container_name: ngrok
-    ports:
-      - "4040:4040"
-    environment:
-      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
-      - NGROK_REGION=eu
-    command: 
-      - "http"
-      - "--log=stdout"
-      - "--log-level=debug"
-      - "--host-header=localhost"
-      - "--url=${NGROK_DOMAIN_NAME}"
-      - "nginx-proxy-manager:81"
-    networks:
-      - proxy
-    depends_on:
-      - nginx-proxy-manager
-
-  n8n:
-    image: docker.n8n.io/n8nio/n8n
-    container_name: n8n
-    environment:
-      - N8N_EDITOR_BASE_URL=https://${NGROK_DOMAIN_NAME}/n8n
-      - N8N_ENDPOINT_REST=rest 
-      - N8N_PATH=/n8n
-      - WEBHOOK_URL=https://${NGROK_DOMAIN_NAME}/n8n/
-    volumes:
-      - n8n_data:/home/node/.n8n
-    networks:
-      - proxy
->>>>>>> 5f80ee441ce9b43d789ea3ac93a4cfd47af11c84
 
   nocodb:
     image: nocodb/nocodb:latest
-<<<<<<< HEAD
     restart: unless-stopped
     networks: ['demo']
     depends_on:
@@ -161,20 +98,3 @@ services:
       - 6333:6333
     volumes:
       - qdrant_storage:/qdrant/storage
-=======
-    container_name: nocodb
-    environment:
-      - NC_DB=sqlite3:/usr/app/data/nocodb.db
-      - NC_PUBLIC_URL=https://${NGROK_DOMAIN_NAME} # Subdominio para NocoDB
-      - NC_DISABLE_TELE=true
-    volumes:
-      - nocodb_data:/usr/app/data
-    networks:
-      - proxy
-
-volumes:
-  n8n_data:
-    external: true
-  nocodb_data:
-    external: true
->>>>>>> 5f80ee441ce9b43d789ea3ac93a4cfd47af11c84
