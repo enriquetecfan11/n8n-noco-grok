@@ -4,8 +4,4 @@ tunnels:
     n8n:
         proto: http
         addr: n8n:5678
-        domain: tarpon-peaceful-sawfish.ngrok-free.app
-    nocodb:
-        proto: http
-        addr: nocodb:8080
-        domain: tarpon-peaceful-sawfish.ngrok-free.app
+        domain: 
