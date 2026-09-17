@@ -1,42 +1,98 @@
 # n8n-noco-grok
 
-Este proyecto proporciona un entorno listo para usar con [n8n](https://n8n.io/), [PostgreSQL](https://www.postgresql.org/), [Qdrant](https://qdrant.tech/) y [Ngrok](https://ngrok.com/) usando Docker Compose. Es ideal para automatización de flujos de trabajo, almacenamiento de datos y exposición segura de endpoints a través de túneles.
+Entorno self-hosted para [n8n](https://n8n.io/) con PostgreSQL, Qdrant, Ngrok y el sandbox oficial de n8n para `n8n Assistant`.
 
-## Servicios incluidos
+## Servicios
 
-- **n8n**: Plataforma de automatización de flujos de trabajo.
-- **Postgres**: Base de datos relacional utilizada por n8n.
-- **Qdrant**: Motor de vector search para IA y almacenamiento de embeddings.
-- **Ngrok**: Exposición de servicios locales a Internet mediante túneles seguros.
+- **n8n**: automatización de workflows y n8n Assistant.
+- **PostgreSQL**: persistencia de n8n.
+- **Qdrant**: almacenamiento vectorial para IA.
+- **sandbox-certs**, **sandbox-api** y **sandbox-runner-1**: ejecución aislada de código mediante el sandbox oficial de n8n.
+- **runners**: task runners externos de n8n.
+- **SearXNG**: búsqueda web interna para Assistant.
+- **Ngrok**: endpoint público para webhooks y conexiones externas.
 
-## Requisitos previos
+## Requisitos
 
-- [Docker](https://www.docker.com/) y [Docker Compose](https://docs.docker.com/compose/) instalados.
-- Variables de entorno configuradas en un archivo `.env`:
-  - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
-  - `NGROK_TOKEN` (token de autenticación de Ngrok)
-  - Opcional: `N8N_BASIC_AUTH_USER`, `N8N_BASIC_AUTH_PASSWORD` para proteger el acceso a n8n
+- Docker Engine y Docker Compose v2.
+- Al menos 4 GB de RAM y 2 vCPUs para el runner Docker-in-Docker.
+- Un token de Ngrok.
+- Una API key de Anthropic, OpenAI u OpenRouter.
 
-## Uso rápido
+## Configuración inicial
 
-1. Clona este repositorio y entra en la carpeta del proyecto.
-2. Crea un archivo `.env` con las variables necesarias.
-3. Levanta los servicios:
+1. Copia la plantilla de variables:
+
    ```sh
-   docker-compose up -d
+   cp .env.example .env
    ```
-4. Accede a n8n en [http://localhost:5678](http://localhost:5678)
-5. El endpoint público de n8n estará disponible mediante el dominio configurado en Ngrok.
+
+2. Completa `.env` con tus credenciales y secretos únicos. No subas este archivo a GitHub.
+
+3. Crea la configuración local de Ngrok:
+
+   ```sh
+   cp ngrok.example.yml ngrok.yml
+   ```
+
+   Edita `ngrok.yml` y sustituye `https://your-subdomain.ngrok-free.app` por tu endpoint privado. Este archivo está ignorado por Git; `ngrok.example.yml` es el único que debe versionarse.
+
+4. Inicia el entorno:
+
+   ```sh
+   docker compose up -d
+   docker compose ps
+   ```
+
+5. Abre n8n en [http://localhost:5678](http://localhost:5678).
+
+## n8n Assistant
+
+`.env.example` activa `instance-ai`, usa `anthropic/claude-opus-4-8` y conecta Assistant al sandbox oficial mediante `http://sandbox-api:8080`.
+
+Completa estas variables antes de usarlo:
+
+- `N8N_INSTANCE_AI_MODEL_API_KEY` o la API key estándar del proveedor.
+- `N8N_RUNNERS_AUTH_TOKEN`.
+- `SANDBOX_API_KEYS`.
+- `SANDBOX_API_RUNNER_REGISTRATION_TOKEN`.
+- `SANDBOX_API_RUNNER_API_KEY`.
+- `N8N_SANDBOX_SERVICE_API_KEY`, con un valor incluido en `SANDBOX_API_KEYS`.
+- `SEARXNG_SECRET`.
+
+La búsqueda web usa SearXNG. `INSTANCE_AI_BRAVE_SEARCH_API_KEY` es opcional y tiene prioridad si se configura.
+
+Comprueba el sandbox con:
+
+```sh
+docker compose exec n8n wget -qO- http://sandbox-api:8080/healthz
+```
+
+Después de cambiar `.env`, recrea n8n:
+
+```sh
+docker compose up -d --force-recreate n8n
+```
+
+Assistant está en Preview. Revisa los workflows generados antes de utilizarlos en producción.
+
+## URL pública y Ngrok
+
+`WEBHOOK_URL` debe coincidir con el endpoint HTTPS configurado en tu `ngrok.yml` cuando uses webhooks o canales externos.
+
+El token se proporciona mediante `NGROK_TOKEN` en `.env`; no lo escribas en ningún archivo YAML versionable.
 
 ## Archivos principales
 
-- `docker-compose.yaml`: Define los servicios y redes.
-- `ngrok.yml`: Configuración de túneles para exponer n8n.
+- `docker-compose.yaml`: servicios, redes, persistencia y configuración.
+- `.env.example`: plantilla de variables sin credenciales reales.
+- `ngrok.example.yml`: configuración de Ngrok para versionar.
+- `ngrok.yml`: configuración local con tu endpoint privado; ignorada por Git.
+- `searxng-settings.yml`: habilita el formato JSON que usa Assistant.
 
-## Personalización
+## Seguridad
 
-- Modifica `ngrok.yml` para cambiar el dominio o configuración del túnel.
-- Puedes añadir más servicios o cambiar los puertos según tus necesidades.
+No publiques los puertos de `sandbox-api` ni `sandbox-runner-1`. El runner es privilegiado porque usa Docker-in-Docker y debe permanecer accesible solo dentro de la red de Compose.
 
 ## Licencia
 

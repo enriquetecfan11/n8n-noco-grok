@@ -1,0 +1,7 @@
+version: 3
+endpoints:
+  - name: n8n
+    # Replace this example with your private Ngrok endpoint in ngrok.yml.
+    url: https://your-subdomain.ngrok-free.app
+    upstream:
+      url: n8n:5678
