@@ -48,11 +48,10 @@ Entorno self-hosted para [n8n](https://n8n.io/) con PostgreSQL, Qdrant, Ngrok y 
 
 ## n8n Assistant
 
-`.env.example` activa `instance-ai`, usa `anthropic/claude-opus-4-8` y conecta Assistant al sandbox oficial mediante `http://sandbox-api:8080`.
+`.env.example` activa `instance-ai` y conecta Assistant al sandbox oficial mediante `http://sandbox-api:8080`. El proveedor, la API key y el modelo se configuran desde la interfaz de n8n, en los ajustes del asistente.
 
 Completa estas variables antes de usarlo:
 
-- `N8N_INSTANCE_AI_MODEL_API_KEY` o la API key estándar del proveedor.
 - `N8N_RUNNERS_AUTH_TOKEN`.
 - `SANDBOX_API_KEYS`.
 - `SANDBOX_API_RUNNER_REGISTRATION_TOKEN`.
